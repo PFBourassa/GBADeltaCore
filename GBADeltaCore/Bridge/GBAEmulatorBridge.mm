@@ -15,6 +15,7 @@
 #include "System.h"
 #include "gba/Sound.h"
 #include "gba/GBA.h"
+#include "gba/Globals.h"
 #include "gba/Cheats.h"
 #include "gba/RTC.h"
 #include "Util.h"
@@ -149,6 +150,27 @@ int  RGB_LOW_BITS_MASK;
     {
         GBASystem.emuMain(GBASystem.emuCount);
     }
+}
+
+- (nullable NSData *)readMemoryAtAddress:(NSInteger)address size:(NSInteger)size
+{
+    if (workRAM == NULL)
+    {
+        return nil;
+    }
+    
+    void *bytes = NULL;
+    if (address >= 0x8000)
+    {
+        bytes = (void *)(workRAM + address - 0x8000);
+    }
+    else
+    {
+        bytes = (void *)(internalRAM + address);
+    }
+    
+    NSData *data = [NSData dataWithBytesNoCopy:bytes length:size freeWhenDone:NO];
+    return data;
 }
 
 #pragma mark - Settings -
